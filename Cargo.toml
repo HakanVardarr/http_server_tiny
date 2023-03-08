@@ -1,9 +1,9 @@
 [package]
 name = "http_server_tiny"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["Hakan Vardar"]
-description = "HTTP SERVEr"
+description = "HTTP SERVER"
 license = "MIT"
 repository = "https://github.com/HakanVardarr/http_server_tiny"
 

@@ -1,5 +1,6 @@
 use std::{collections::HashMap, fs::File, net::ToSocketAddrs};
-use tiny_http::{Header, Method, Request, Response, Server};
+pub use tiny_http::Method;
+use tiny_http::{Header, Request, Response, Server};
 
 pub fn handle_file<'a>(file_name: &'a str, ct: &'a str, sc: u32) -> Response<File> {
     Response::from_file(File::open(file_name).unwrap())
