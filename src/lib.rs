@@ -34,10 +34,12 @@ impl<'a> RequestInside<'a> {
     }
 }
 
+type Func<'a> = Box<dyn Fn(RequestInside) -> Res<'a> + Send + 'static + Sync>;
+
 pub struct HttpServer<'a> {
     server: Server,
     error_path: &'a str,
-    pub routes: HashMap<(&'a Method, &'a str), Box<dyn Fn(RequestInside) -> Res<'a>>>,
+    pub routes: HashMap<(&'a Method, &'a str), Func<'a>>,
 }
 
 impl<'a> HttpServer<'a> {
@@ -51,19 +53,19 @@ impl<'a> HttpServer<'a> {
             routes: HashMap::new(),
         }
     }
-    pub fn add_route(
-        &mut self,
-        method: &'a Method,
-        url: &'a str,
-        f: Box<dyn Fn(RequestInside) -> Res<'a>>,
-    ) {
+    pub fn add_route(&mut self, method: &'a Method, url: &'a str, f: Func<'a>) {
         self.routes.insert((method, url), f);
     }
 
-    pub fn handle_requests(&self) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn handle_requests(
+        &self,
+        f: Box<dyn Fn(&RequestInside) -> ()>,
+    ) -> Result<(), Box<dyn std::error::Error>> {
         for mut request in self.server.incoming_requests() {
             let req = RequestInside::new(&mut request);
             let result = self.routes.get(&(req.method, req.url));
+
+            f(&req);
 
             if let Some(func) = result {
                 let res = func(req);
