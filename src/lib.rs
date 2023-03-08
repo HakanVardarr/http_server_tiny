@@ -36,16 +36,18 @@ impl<'a> RequestInside<'a> {
 
 pub struct HttpServer<'a> {
     server: Server,
+    error_path: &'a str,
     pub routes: HashMap<(&'a Method, &'a str), Box<dyn Fn(RequestInside) -> Res<'a>>>,
 }
 
 impl<'a> HttpServer<'a> {
-    pub fn new<S>(addr: S) -> Self
+    pub fn new<S>(addr: S, error_path: &'a str) -> Self
     where
         S: ToSocketAddrs,
     {
         Self {
             server: Server::http(addr).unwrap(),
+            error_path,
             routes: HashMap::new(),
         }
     }
@@ -78,7 +80,7 @@ impl<'a> HttpServer<'a> {
                 };
             } else {
                 request.respond(handle_file(
-                    "./static/404.html",
+                    self.error_path,
                     "text/html; charset=utf-8",
                     404,
                 ))?;
