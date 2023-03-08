@@ -7,6 +7,8 @@ Tiny http server library using tiny http
 You need to provide a error.html file to use when server return 404 error.
 
 
+## src/main.rs
+
 ```rust
 use http_server_tiny::{HttpServer, Method, Res};
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -32,7 +34,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     server.add_route(
         &Method::Get,
         "/api/name",
-        Box::new(|_req| Res::Json(r"{'name': 'Hakan'}".to_string())),
+        Box::new(|_| Res::Json(r"{'name': 'Hakan'}".to_string())),
     );
 
     server.add_route(
@@ -46,6 +48,44 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     server.handle_requests()
 }
+```
+## index.html
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hello, World</title>
+  </head>
+  <body>
+    <h1>Hello, world!</h1>
+  </body>
+  <script src="index.js"></script>
+</html>
+```
+## index.js
+```javascript
+fetch("/api/search", {
+    method: 'POST',
+    body: 'Hakan',
+})
 
+```
+## error.html
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>404</title>
+  </head>
+  <body>
+    404
+  </body>
+</html>
 
 ```
