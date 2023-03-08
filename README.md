@@ -2,6 +2,11 @@
 Tiny http server library using tiny http
 
 # Usage: 
+
+
+You need to provide a error.html file to use when server return 404 error.
+
+
 ```rust
 use http_server_tiny::{HttpServer, Method, Res};
 fn main() -> Result<(), Box<dyn std::error::Error>> {
