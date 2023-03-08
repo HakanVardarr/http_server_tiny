@@ -1,5 +1,8 @@
 use http_server_tiny::{HttpServer, Method, Res};
-use std::{sync::Arc, thread};
+use std::{
+    sync::{Arc, RwLock},
+    thread,
+};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut server = HttpServer::new("0.0.0.0:8000", "error.html");
@@ -21,7 +24,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             sc: 200,
         }),
     );
-    let server = Arc::new(server);
+
+    let server = Arc::new(RwLock::new(server));
 
     let mut handles = Vec::new();
 
@@ -29,6 +33,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let server = server.clone();
         let handle = thread::spawn(move || {
             server
+                .read()
+                .unwrap()
                 .handle_requests(Box::new(|req_in| {
                     println!("INFO: {} '{}'\n", req_in.method, req_in.url);
                 }))
